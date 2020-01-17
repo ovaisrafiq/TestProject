@@ -1,0 +1,19 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+# config/routes.yaml
+
+# the "app_lucky_number" route name is not important yet
+app_user_number:
+    path: /user/number
+    controller: App\Controller\UserController::number
+
+# app_user_register:
+#     path: /register
+#     controller: App\Controller\UserController::register
+#     methods:    POST|HEAD    
+
+app_user_register:
+    path:  /user/register
+    controller: App\Controller\UserController::register
+    methods: POST
