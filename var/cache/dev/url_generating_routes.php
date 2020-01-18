@@ -16,6 +16,7 @@ return [
     '_profiler_exception' => [['token'], ['_controller' => 'web_profiler.controller.exception_panel::body'], [], [['text', '/exception'], ['variable', '/', '[^/]++', 'token', true], ['text', '/_profiler']], [], []],
     '_profiler_exception_css' => [['token'], ['_controller' => 'web_profiler.controller.exception_panel::stylesheet'], [], [['text', '/exception.css'], ['variable', '/', '[^/]++', 'token', true], ['text', '/_profiler']], [], []],
     'app_user_number' => [[], ['_controller' => 'App\\Controller\\UserController::number'], [], [['text', '/user/number']], [], []],
-    'app_user_register' => [[], ['_controller' => 'App\\Controller\\UserController::register'], [], [['text', '/user/register']], [], []],
-    'api_login_check' => [[], [], [], [['text', '/api/login_check']], [], []],
+    'register' => [[], ['_controller' => 'App\\Controller\\AuthController::register'], [], [['text', '/register']], [], []],
+    'api_login_check' => [[], ['_controller' => 'App\\Controller\\AuthController::getTokenUser'], [], [['text', '/api/login_check']], [], []],
+    'test' => [[], ['_controller' => 'App\\Controller\\ApiController::test'], [], [['text', '/api/test']], [], []],
 ];

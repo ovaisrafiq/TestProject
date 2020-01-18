@@ -6,32 +6,35 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+//use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+//use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+//use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use App\Entity\User;
 use App\Repository\UserRepository;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
+//use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Core\Security;
+
 
 class UserController
 {
 
 	private $userRepository;
 
-    private $jwtManager;
+    //private $jwtManager;
 
-    private $jwtEncoder;
+    //private $jwtEncoder;
 
-
-    public function __construct(UserRepository $userRepository,JWTTokenManagerInterface $jwtManager,JWTEncoderInterface $jwtEncoder)
+    #,JWTTokenManagerInterface $jwtManager,JWTEncoderInterface $jwtEncoder
+    public function __construct(UserRepository $userRepository,Security $security)
     {
         $this->userRepository = $userRepository;
-        $this->jwtManager = $jwtManager;
-        $this->jwtEncoder = $jwtEncoder;
+        //$this->jwtManager = $jwtManager;
+        //$this->jwtEncoder = $jwtEncoder;
+        $this->security = $security;
         //$this->jwtManager = $jwtManager;
     }
 
-    public function number(Request $request,UserProviderInterface $userProvider)
+    public function number(Request $request)
     {
         //echo phpinfo();
     	//echo "teest";die;
@@ -40,33 +43,13 @@ class UserController
         //$user = $this->get('security.token_storage')->getToken()->getUser();  
         //print_r($user);die;
         //$request->headers->get('Authorization');
-        try{  
-        $data = $this->jwtEncoder->decode($this->tokenStorageInterface->getToken());
-        echo $data;
-        }catch (\Exception $e) {
-        throw new \Symfony\Component\Security\Core\Exception\BadCredentialsException($e->getMessage(), 0, $e);
-        }
-        die;
-        if(!$data){
-          return null;
-        }
-        $user = $jwtEncoder->decode($request->headers->get('Authorization'));
-        print_r($user);die;
-
-
-        $authorizationHeader = $request->headers->get('Authorization');
-        $response['user'] = $this->jwtManager->decode($authorizationHeader);
-        print_r($response['user']);
-        die;
-        //echo $this->user;die;
-        //$authorizationHeader = $request->headers->get('Authorization');
-        //return substr($authorizationHeader, 7);
-
-        //$number = random_int(0, 100);
-        $jwtManager = $this->get('lexik_jwt_authentication.jwt_manager');
-        $token = $jwtManager->create($user);
+        //try{  
+        //echo "test";
+        $user = $this->security->getUser();
+        //echo $user->getId();
+        //print_r($user);die;
         return new Response(
-            '<html><body>'.substr($authorizationHeader, 7).'</body></html>'
+            '<html><body>You are logged in as '.$user->getEmail().'</body></html>'
         );
     }
 

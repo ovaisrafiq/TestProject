@@ -15,12 +15,28 @@ app_user_number:
 #     controller: App\Controller\UserController::register
 #     methods:    POST|HEAD    
 
-app_user_register:
-    path:  /user/register
-    controller: App\Controller\UserController::register
-    methods: POST
+# app_user_register:
+#     path:  /user/register
+#     controller: App\Controller\UserController::register
+#     methods: POST
     
 
+# api_login_check:
+#     path: /api/login_check
+#     methods: POST      
+
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+register:
+  path: /register
+  controller: App\Controller\AuthController::register
+  methods: POST
+
 api_login_check:
-    path: /api/login_check
-    methods: POST      
+  path: /api/login_check
+  controller: App\Controller\AuthController::getTokenUser
+
+test:
+  path: /api/test
+  controller: App\Controller\ApiController::test
