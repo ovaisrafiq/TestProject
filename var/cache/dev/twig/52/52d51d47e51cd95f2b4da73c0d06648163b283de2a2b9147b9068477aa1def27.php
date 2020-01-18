@@ -155,6 +155,6 @@ class __TwigTemplate_4b3e41aff5f3f2968a76139278618c6a60e396dc7266095a2223d6b7d77
 {% block panel %}
     {{ render(path('_profiler_router', { token: token })) }}
 {% endblock %}
-", "@WebProfiler/Collector/router.html.twig", "D:\\xampp\\htdocs\\test_project\\vendor\\symfony\\web-profiler-bundle\\Resources\\views\\Collector\\router.html.twig");
+", "@WebProfiler/Collector/router.html.twig", "E:\\xampp\\htdocs\\test_project\\vendor\\symfony\\web-profiler-bundle\\Resources\\views\\Collector\\router.html.twig");
     }
 }

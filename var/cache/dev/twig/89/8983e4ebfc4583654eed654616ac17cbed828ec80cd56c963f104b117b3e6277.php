@@ -1099,6 +1099,6 @@ $context["log"], "priorityName", [], "any", false, false, false, 206), "WARNING"
         {% endif %}
     {% endif %}
 {% endmacro %}
-", "@WebProfiler/Collector/logger.html.twig", "D:\\xampp\\htdocs\\test_project\\vendor\\symfony\\web-profiler-bundle\\Resources\\views\\Collector\\logger.html.twig");
+", "@WebProfiler/Collector/logger.html.twig", "E:\\xampp\\htdocs\\test_project\\vendor\\symfony\\web-profiler-bundle\\Resources\\views\\Collector\\logger.html.twig");
     }
 }

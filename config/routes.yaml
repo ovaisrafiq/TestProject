@@ -7,6 +7,8 @@
 app_user_number:
     path: /user/number
     controller: App\Controller\UserController::number
+    methods: POST
+
 
 # app_user_register:
 #     path: /register
@@ -17,3 +19,8 @@ app_user_register:
     path:  /user/register
     controller: App\Controller\UserController::register
     methods: POST
+    
+
+api_login_check:
+    path: /api/login_check
+    methods: POST      

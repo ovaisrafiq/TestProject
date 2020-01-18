@@ -17,4 +17,5 @@ return [
     '_profiler_exception_css' => [['token'], ['_controller' => 'web_profiler.controller.exception_panel::stylesheet'], [], [['text', '/exception.css'], ['variable', '/', '[^/]++', 'token', true], ['text', '/_profiler']], [], []],
     'app_user_number' => [[], ['_controller' => 'App\\Controller\\UserController::number'], [], [['text', '/user/number']], [], []],
     'app_user_register' => [[], ['_controller' => 'App\\Controller\\UserController::register'], [], [['text', '/user/register']], [], []],
+    'api_login_check' => [[], [], [], [['text', '/api/login_check']], [], []],
 ];
