@@ -1,8 +1,11 @@
 <?php
+
 namespace App\Repository;
+
 use App\Entity\Post;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+
 /**
  * @method Post|null find($id, $lockMode = null, $lockVersion = null)
  * @method Post|null findOneBy(array $criteria, array $orderBy = null)
@@ -15,6 +18,30 @@ class PostRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Post::class);
     }
+
+    public function savePost($detail,$imageUrl,$user_id)
+    {
+        $newPost = new Post();
+        $newPost
+            ->setDetail($detail)
+            ->setImageUrl($imageUrl)
+            ->setUser($user_id)
+            ->setCreatedAt(new \DateTime('now'));
+            $this->_em->persist($newPost);
+            $this->_em->flush();
+    }
+
+    public function findOneByPost($id): ?Post
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.id = :val')
+            ->setParameter('val', $id)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
+
     // /**
     //  * @return Post[] Returns an array of Post objects
     //  */
@@ -31,6 +58,7 @@ class PostRepository extends ServiceEntityRepository
         ;
     }
     */
+
     /*
     public function findOneBySomeField($value): ?Post
     {

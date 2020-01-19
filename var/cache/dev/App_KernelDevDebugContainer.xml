@@ -259,6 +259,24 @@
         <argument type="service" id=".service_locator.SXie53V.App\Controller\AuthController"/>
       </call>
     </service>
+    <service id="App\Controller\CommentsController" class="App\Controller\CommentsController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <argument type="service" id="App\Repository\CommentsRepository"/>
+      <argument type="service" id="App\Repository\PostRepository"/>
+      <argument type="service" id="security.helper"/>
+    </service>
+    <service id="App\Controller\LikesController" class="App\Controller\LikesController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <argument type="service" id="App\Repository\LikesRepository"/>
+      <argument type="service" id="App\Repository\PostRepository"/>
+      <argument type="service" id="security.helper"/>
+    </service>
+    <service id="App\Controller\PostController" class="App\Controller\PostController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <argument type="service" id="App\Repository\PostRepository"/>
+      <argument type="service" id="security.helper"/>
+      <argument type="service" id="doctrine.orm.default_entity_manager"/>
+    </service>
     <service id="App\Controller\UserController" class="App\Controller\UserController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
       <argument type="service" id="App\Repository\UserRepository"/>
@@ -270,6 +288,14 @@
     <service id="App\DataFixtures\UserFixtures" class="App\DataFixtures\UserFixtures" autowire="true" autoconfigure="true">
       <tag name="doctrine.fixture.orm"/>
       <argument type="service" id="security.user_password_encoder.generic"/>
+    </service>
+    <service id="App\Repository\CommentsRepository" class="App\Repository\CommentsRepository" autowire="true" autoconfigure="true">
+      <tag name="doctrine.repository_service"/>
+      <argument type="service" id="doctrine"/>
+    </service>
+    <service id="App\Repository\LikesRepository" class="App\Repository\LikesRepository" autowire="true" autoconfigure="true">
+      <tag name="doctrine.repository_service"/>
+      <argument type="service" id="doctrine"/>
     </service>
     <service id="App\Repository\PostRepository" class="App\Repository\PostRepository" autowire="true" autoconfigure="true">
       <tag name="doctrine.repository_service"/>
@@ -1552,6 +1578,11 @@
         <argument type="service" id="security.authentication.provider.anonymous.login"/>
         <argument type="service" id="security.authentication.provider.guard.api"/>
         <argument type="service" id="security.authentication.provider.guard.user"/>
+        <argument type="service" id="security.authentication.provider.guard.post"/>
+        <argument type="service" id="security.authentication.provider.guard.post_update"/>
+        <argument type="service" id="security.authentication.provider.guard.post_delete"/>
+        <argument type="service" id="security.authentication.provider.guard.likes"/>
+        <argument type="service" id="security.authentication.provider.guard.comments"/>
       </argument>
       <argument>true</argument>
       <call method="setEventDispatcher">
@@ -1596,11 +1627,16 @@
       <argument type="service" id="security.authentication.trust_resolver"/>
     </service>
     <service id="security.firewall.map" class="Symfony\Bundle\SecurityBundle\Security\FirewallMap" public="false">
-      <argument type="service" id=".service_locator.qlwqij5"/>
+      <argument type="service" id=".service_locator.jitdPpI"/>
       <argument type="iterator">
         <argument key="security.firewall.map.context.login" type="service" id=".security.request_matcher.HeUdK73"/>
         <argument key="security.firewall.map.context.api" type="service" id=".security.request_matcher.p4VlLPC"/>
         <argument key="security.firewall.map.context.user" type="service" id=".security.request_matcher.WF2eJqA"/>
+        <argument key="security.firewall.map.context.post" type="service" id=".security.request_matcher.9upvs4S"/>
+        <argument key="security.firewall.map.context.post_update" type="service" id=".security.request_matcher.0keviDL"/>
+        <argument key="security.firewall.map.context.post_delete" type="service" id=".security.request_matcher.1LjBRsb"/>
+        <argument key="security.firewall.map.context.likes" type="service" id=".security.request_matcher.hlaiwmB"/>
+        <argument key="security.firewall.map.context.comments" type="service" id=".security.request_matcher.KjvI7tL"/>
       </argument>
     </service>
     <service id="security.firewall.context" class="Symfony\Bundle\SecurityBundle\Security\FirewallContext" public="false" abstract="true">
@@ -1946,6 +1982,11 @@
         <argument>login</argument>
         <argument>api</argument>
         <argument>user</argument>
+        <argument>post</argument>
+        <argument>post_update</argument>
+        <argument>post_delete</argument>
+        <argument>likes</argument>
+        <argument>comments</argument>
       </argument>
       <call method="setSessionAuthenticationStrategy">
         <argument type="service" id="security.authentication.session_strategy"/>
@@ -2194,11 +2235,311 @@
       <argument>null</argument>
       <argument type="service" id="security.firewall.map.config.user"/>
     </service>
-    <service id=".service_locator.qlwqij5" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+    <service id="security.firewall.map.config.post" class="Symfony\Bundle\SecurityBundle\Security\FirewallConfig" public="false">
+      <argument>post</argument>
+      <argument>security.user_checker</argument>
+      <argument>.security.request_matcher.9upvs4S</argument>
+      <argument>true</argument>
+      <argument>true</argument>
+      <argument>security.user.provider.concrete.app_user_provider</argument>
+      <argument>null</argument>
+      <argument>lexik_jwt_authentication.jwt_token_authenticator</argument>
+      <argument>null</argument>
+      <argument>null</argument>
+      <argument type="collection">
+        <argument>guard</argument>
+      </argument>
+      <argument>null</argument>
+    </service>
+    <service id=".security.request_matcher.9upvs4S" class="Symfony\Component\HttpFoundation\RequestMatcher" public="false">
+      <argument>^/post/create</argument>
+    </service>
+    <service id="security.authentication.provider.guard.post" class="Symfony\Component\Security\Guard\Provider\GuardAuthenticationProvider" public="false">
+      <argument type="iterator">
+        <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      </argument>
+      <argument type="service" id="security.user.provider.concrete.app_user_provider"/>
+      <argument>post</argument>
+      <argument type="service" id="security.user_checker"/>
+      <argument type="service" id="security.user_password_encoder.generic"/>
+    </service>
+    <service id="security.authentication.listener.guard.post" class="Symfony\Component\Security\Guard\Firewall\GuardAuthenticationListener" public="false">
+      <tag name="security.remember_me_aware" id="post" provider="security.user.provider.concrete.app_user_provider"/>
+      <argument type="service" id="security.authentication.guard_handler"/>
+      <argument type="service" id="security.authentication.manager"/>
+      <argument>post</argument>
+      <argument type="iterator">
+        <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      </argument>
+      <argument type="service" id="logger" on-invalid="null"/>
+    </service>
+    <service id="security.exception_listener.post" class="Symfony\Component\Security\Http\Firewall\ExceptionListener" public="false">
+      <argument type="service" id="security.token_storage"/>
+      <argument type="service" id="security.authentication.trust_resolver"/>
+      <argument type="service" id="security.http_utils"/>
+      <argument>post</argument>
+      <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      <argument>null</argument>
+      <argument>null</argument>
+      <argument type="service" id="logger" on-invalid="null"/>
+      <argument>true</argument>
+    </service>
+    <service id="security.firewall.map.context.post" class="Symfony\Bundle\SecurityBundle\Security\FirewallContext" public="false">
+      <argument type="iterator">
+        <argument type="service" id="security.channel_listener"/>
+        <argument type="service" id="security.authentication.listener.guard.post"/>
+        <argument type="service" id="security.access_listener"/>
+      </argument>
+      <argument type="service" id="security.exception_listener.post"/>
+      <argument>null</argument>
+      <argument type="service" id="security.firewall.map.config.post"/>
+    </service>
+    <service id="security.firewall.map.config.post_update" class="Symfony\Bundle\SecurityBundle\Security\FirewallConfig" public="false">
+      <argument>post_update</argument>
+      <argument>security.user_checker</argument>
+      <argument>.security.request_matcher.0keviDL</argument>
+      <argument>true</argument>
+      <argument>true</argument>
+      <argument>security.user.provider.concrete.app_user_provider</argument>
+      <argument>null</argument>
+      <argument>lexik_jwt_authentication.jwt_token_authenticator</argument>
+      <argument>null</argument>
+      <argument>null</argument>
+      <argument type="collection">
+        <argument>guard</argument>
+      </argument>
+      <argument>null</argument>
+    </service>
+    <service id=".security.request_matcher.0keviDL" class="Symfony\Component\HttpFoundation\RequestMatcher" public="false">
+      <argument>^/post/update</argument>
+    </service>
+    <service id="security.authentication.provider.guard.post_update" class="Symfony\Component\Security\Guard\Provider\GuardAuthenticationProvider" public="false">
+      <argument type="iterator">
+        <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      </argument>
+      <argument type="service" id="security.user.provider.concrete.app_user_provider"/>
+      <argument>post_update</argument>
+      <argument type="service" id="security.user_checker"/>
+      <argument type="service" id="security.user_password_encoder.generic"/>
+    </service>
+    <service id="security.authentication.listener.guard.post_update" class="Symfony\Component\Security\Guard\Firewall\GuardAuthenticationListener" public="false">
+      <tag name="security.remember_me_aware" id="post_update" provider="security.user.provider.concrete.app_user_provider"/>
+      <argument type="service" id="security.authentication.guard_handler"/>
+      <argument type="service" id="security.authentication.manager"/>
+      <argument>post_update</argument>
+      <argument type="iterator">
+        <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      </argument>
+      <argument type="service" id="logger" on-invalid="null"/>
+    </service>
+    <service id="security.exception_listener.post_update" class="Symfony\Component\Security\Http\Firewall\ExceptionListener" public="false">
+      <argument type="service" id="security.token_storage"/>
+      <argument type="service" id="security.authentication.trust_resolver"/>
+      <argument type="service" id="security.http_utils"/>
+      <argument>post_update</argument>
+      <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      <argument>null</argument>
+      <argument>null</argument>
+      <argument type="service" id="logger" on-invalid="null"/>
+      <argument>true</argument>
+    </service>
+    <service id="security.firewall.map.context.post_update" class="Symfony\Bundle\SecurityBundle\Security\FirewallContext" public="false">
+      <argument type="iterator">
+        <argument type="service" id="security.channel_listener"/>
+        <argument type="service" id="security.authentication.listener.guard.post_update"/>
+        <argument type="service" id="security.access_listener"/>
+      </argument>
+      <argument type="service" id="security.exception_listener.post_update"/>
+      <argument>null</argument>
+      <argument type="service" id="security.firewall.map.config.post_update"/>
+    </service>
+    <service id="security.firewall.map.config.post_delete" class="Symfony\Bundle\SecurityBundle\Security\FirewallConfig" public="false">
+      <argument>post_delete</argument>
+      <argument>security.user_checker</argument>
+      <argument>.security.request_matcher.1LjBRsb</argument>
+      <argument>true</argument>
+      <argument>true</argument>
+      <argument>security.user.provider.concrete.app_user_provider</argument>
+      <argument>null</argument>
+      <argument>lexik_jwt_authentication.jwt_token_authenticator</argument>
+      <argument>null</argument>
+      <argument>null</argument>
+      <argument type="collection">
+        <argument>guard</argument>
+      </argument>
+      <argument>null</argument>
+    </service>
+    <service id=".security.request_matcher.1LjBRsb" class="Symfony\Component\HttpFoundation\RequestMatcher" public="false">
+      <argument>^/post/delete</argument>
+    </service>
+    <service id="security.authentication.provider.guard.post_delete" class="Symfony\Component\Security\Guard\Provider\GuardAuthenticationProvider" public="false">
+      <argument type="iterator">
+        <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      </argument>
+      <argument type="service" id="security.user.provider.concrete.app_user_provider"/>
+      <argument>post_delete</argument>
+      <argument type="service" id="security.user_checker"/>
+      <argument type="service" id="security.user_password_encoder.generic"/>
+    </service>
+    <service id="security.authentication.listener.guard.post_delete" class="Symfony\Component\Security\Guard\Firewall\GuardAuthenticationListener" public="false">
+      <tag name="security.remember_me_aware" id="post_delete" provider="security.user.provider.concrete.app_user_provider"/>
+      <argument type="service" id="security.authentication.guard_handler"/>
+      <argument type="service" id="security.authentication.manager"/>
+      <argument>post_delete</argument>
+      <argument type="iterator">
+        <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      </argument>
+      <argument type="service" id="logger" on-invalid="null"/>
+    </service>
+    <service id="security.exception_listener.post_delete" class="Symfony\Component\Security\Http\Firewall\ExceptionListener" public="false">
+      <argument type="service" id="security.token_storage"/>
+      <argument type="service" id="security.authentication.trust_resolver"/>
+      <argument type="service" id="security.http_utils"/>
+      <argument>post_delete</argument>
+      <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      <argument>null</argument>
+      <argument>null</argument>
+      <argument type="service" id="logger" on-invalid="null"/>
+      <argument>true</argument>
+    </service>
+    <service id="security.firewall.map.context.post_delete" class="Symfony\Bundle\SecurityBundle\Security\FirewallContext" public="false">
+      <argument type="iterator">
+        <argument type="service" id="security.channel_listener"/>
+        <argument type="service" id="security.authentication.listener.guard.post_delete"/>
+        <argument type="service" id="security.access_listener"/>
+      </argument>
+      <argument type="service" id="security.exception_listener.post_delete"/>
+      <argument>null</argument>
+      <argument type="service" id="security.firewall.map.config.post_delete"/>
+    </service>
+    <service id="security.firewall.map.config.likes" class="Symfony\Bundle\SecurityBundle\Security\FirewallConfig" public="false">
+      <argument>likes</argument>
+      <argument>security.user_checker</argument>
+      <argument>.security.request_matcher.hlaiwmB</argument>
+      <argument>true</argument>
+      <argument>true</argument>
+      <argument>security.user.provider.concrete.app_user_provider</argument>
+      <argument>null</argument>
+      <argument>lexik_jwt_authentication.jwt_token_authenticator</argument>
+      <argument>null</argument>
+      <argument>null</argument>
+      <argument type="collection">
+        <argument>guard</argument>
+      </argument>
+      <argument>null</argument>
+    </service>
+    <service id=".security.request_matcher.hlaiwmB" class="Symfony\Component\HttpFoundation\RequestMatcher" public="false">
+      <argument>^/likes/create</argument>
+    </service>
+    <service id="security.authentication.provider.guard.likes" class="Symfony\Component\Security\Guard\Provider\GuardAuthenticationProvider" public="false">
+      <argument type="iterator">
+        <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      </argument>
+      <argument type="service" id="security.user.provider.concrete.app_user_provider"/>
+      <argument>likes</argument>
+      <argument type="service" id="security.user_checker"/>
+      <argument type="service" id="security.user_password_encoder.generic"/>
+    </service>
+    <service id="security.authentication.listener.guard.likes" class="Symfony\Component\Security\Guard\Firewall\GuardAuthenticationListener" public="false">
+      <tag name="security.remember_me_aware" id="likes" provider="security.user.provider.concrete.app_user_provider"/>
+      <argument type="service" id="security.authentication.guard_handler"/>
+      <argument type="service" id="security.authentication.manager"/>
+      <argument>likes</argument>
+      <argument type="iterator">
+        <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      </argument>
+      <argument type="service" id="logger" on-invalid="null"/>
+    </service>
+    <service id="security.exception_listener.likes" class="Symfony\Component\Security\Http\Firewall\ExceptionListener" public="false">
+      <argument type="service" id="security.token_storage"/>
+      <argument type="service" id="security.authentication.trust_resolver"/>
+      <argument type="service" id="security.http_utils"/>
+      <argument>likes</argument>
+      <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      <argument>null</argument>
+      <argument>null</argument>
+      <argument type="service" id="logger" on-invalid="null"/>
+      <argument>true</argument>
+    </service>
+    <service id="security.firewall.map.context.likes" class="Symfony\Bundle\SecurityBundle\Security\FirewallContext" public="false">
+      <argument type="iterator">
+        <argument type="service" id="security.channel_listener"/>
+        <argument type="service" id="security.authentication.listener.guard.likes"/>
+        <argument type="service" id="security.access_listener"/>
+      </argument>
+      <argument type="service" id="security.exception_listener.likes"/>
+      <argument>null</argument>
+      <argument type="service" id="security.firewall.map.config.likes"/>
+    </service>
+    <service id="security.firewall.map.config.comments" class="Symfony\Bundle\SecurityBundle\Security\FirewallConfig" public="false">
+      <argument>comments</argument>
+      <argument>security.user_checker</argument>
+      <argument>.security.request_matcher.KjvI7tL</argument>
+      <argument>true</argument>
+      <argument>true</argument>
+      <argument>security.user.provider.concrete.app_user_provider</argument>
+      <argument>null</argument>
+      <argument>lexik_jwt_authentication.jwt_token_authenticator</argument>
+      <argument>null</argument>
+      <argument>null</argument>
+      <argument type="collection">
+        <argument>guard</argument>
+      </argument>
+      <argument>null</argument>
+    </service>
+    <service id=".security.request_matcher.KjvI7tL" class="Symfony\Component\HttpFoundation\RequestMatcher" public="false">
+      <argument>^/comments/create</argument>
+    </service>
+    <service id="security.authentication.provider.guard.comments" class="Symfony\Component\Security\Guard\Provider\GuardAuthenticationProvider" public="false">
+      <argument type="iterator">
+        <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      </argument>
+      <argument type="service" id="security.user.provider.concrete.app_user_provider"/>
+      <argument>comments</argument>
+      <argument type="service" id="security.user_checker"/>
+      <argument type="service" id="security.user_password_encoder.generic"/>
+    </service>
+    <service id="security.authentication.listener.guard.comments" class="Symfony\Component\Security\Guard\Firewall\GuardAuthenticationListener" public="false">
+      <tag name="security.remember_me_aware" id="comments" provider="security.user.provider.concrete.app_user_provider"/>
+      <argument type="service" id="security.authentication.guard_handler"/>
+      <argument type="service" id="security.authentication.manager"/>
+      <argument>comments</argument>
+      <argument type="iterator">
+        <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      </argument>
+      <argument type="service" id="logger" on-invalid="null"/>
+    </service>
+    <service id="security.exception_listener.comments" class="Symfony\Component\Security\Http\Firewall\ExceptionListener" public="false">
+      <argument type="service" id="security.token_storage"/>
+      <argument type="service" id="security.authentication.trust_resolver"/>
+      <argument type="service" id="security.http_utils"/>
+      <argument>comments</argument>
+      <argument type="service" id="lexik_jwt_authentication.security.guard.jwt_token_authenticator"/>
+      <argument>null</argument>
+      <argument>null</argument>
+      <argument type="service" id="logger" on-invalid="null"/>
+      <argument>true</argument>
+    </service>
+    <service id="security.firewall.map.context.comments" class="Symfony\Bundle\SecurityBundle\Security\FirewallContext" public="false">
+      <argument type="iterator">
+        <argument type="service" id="security.channel_listener"/>
+        <argument type="service" id="security.authentication.listener.guard.comments"/>
+        <argument type="service" id="security.access_listener"/>
+      </argument>
+      <argument type="service" id="security.exception_listener.comments"/>
+      <argument>null</argument>
+      <argument type="service" id="security.firewall.map.config.comments"/>
+    </service>
+    <service id=".service_locator.jitdPpI" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="security.firewall.map.context.api" type="service" id="security.firewall.map.context.api"/>
+        <argument key="security.firewall.map.context.comments" type="service" id="security.firewall.map.context.comments"/>
+        <argument key="security.firewall.map.context.likes" type="service" id="security.firewall.map.context.likes"/>
         <argument key="security.firewall.map.context.login" type="service" id="security.firewall.map.context.login"/>
+        <argument key="security.firewall.map.context.post" type="service" id="security.firewall.map.context.post"/>
+        <argument key="security.firewall.map.context.post_delete" type="service" id="security.firewall.map.context.post_delete"/>
+        <argument key="security.firewall.map.context.post_update" type="service" id="security.firewall.map.context.post_update"/>
         <argument key="security.firewall.map.context.user" type="service" id="security.firewall.map.context.user"/>
       </argument>
     </service>
@@ -2582,7 +2923,7 @@
       <factory class="Doctrine\ORM\EntityManager" method="create"/>
     </service>
     <service id="doctrine.orm.container_repository_factory" class="Doctrine\Bundle\DoctrineBundle\Repository\ContainerRepositoryFactory" public="false">
-      <argument type="service" id=".service_locator.njiYViX"/>
+      <argument type="service" id=".service_locator.KJMUaex"/>
     </service>
     <service id="doctrine.orm.manager_configurator.abstract" class="Doctrine\Bundle\DoctrineBundle\ManagerConfigurator" abstract="true">
       <argument type="collection"/>
@@ -3159,6 +3500,10 @@
     <service id=".abstract.instanceof.App\DataFixtures\AppFixtures" class="App\DataFixtures\AppFixtures" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Doctrine\Bundle\FixturesBundle\ORMFixtureInterface.0.App\DataFixtures\UserFixtures" class="App\DataFixtures\UserFixtures" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\DataFixtures\UserFixtures" class="App\DataFixtures\UserFixtures" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\CommentsRepository" class="App\Repository\CommentsRepository" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Repository\CommentsRepository" class="App\Repository\CommentsRepository" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\LikesRepository" class="App\Repository\LikesRepository" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Repository\LikesRepository" class="App\Repository\LikesRepository" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\PostRepository" class="App\Repository\PostRepository" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Repository\PostRepository" class="App\Repository\PostRepository" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\UserRepository" class="App\Repository\UserRepository" autowire="true" abstract="true"/>
@@ -3359,20 +3704,30 @@
         <argument key="user" type="service" id=".errored..service_locator.vRP73BT.Symfony\Component\Security\Core\User\UserInterface"/>
       </argument>
     </service>
+    <service id=".service_locator.OUBF8mu" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="postRepository" type="service" id="App\Repository\PostRepository"/>
+      </argument>
+    </service>
     <service id=".service_locator.ccM2MGC" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="passwordEncoder" type="service" id="security.user_password_encoder.generic"/>
       </argument>
     </service>
-    <service id=".service_locator.ijdxPNY" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+    <service id=".service_locator.HXWT1BL" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Controller\AuthController::getTokenUser" type="service" id=".service_locator.vRP73BT"/>
         <argument key="App\Controller\AuthController::register" type="service" id=".service_locator.jmvbEvf"/>
+        <argument key="App\Controller\PostController::delete" type="service" id=".service_locator.OUBF8mu"/>
+        <argument key="App\Controller\PostController::update" type="service" id=".service_locator.OUBF8mu"/>
         <argument key="App\Controller\UserController::register" type="service" id=".service_locator.ccM2MGC"/>
         <argument key="App\Controller\AuthController:getTokenUser" type="service" id=".service_locator.vRP73BT"/>
         <argument key="App\Controller\AuthController:register" type="service" id=".service_locator.jmvbEvf"/>
+        <argument key="App\Controller\PostController:delete" type="service" id=".service_locator.OUBF8mu"/>
+        <argument key="App\Controller\PostController:update" type="service" id=".service_locator.OUBF8mu"/>
         <argument key="App\Controller\UserController:register" type="service" id=".service_locator.ccM2MGC"/>
       </argument>
     </service>
@@ -3439,9 +3794,11 @@
         <argument key="doctrine.orm.default_listeners.attach_entity_listeners" type="service" id="doctrine.orm.default_listeners.attach_entity_listeners"/>
       </argument>
     </service>
-    <service id=".service_locator.njiYViX" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+    <service id=".service_locator.KJMUaex" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
+        <argument key="App\Repository\CommentsRepository" type="service" id="App\Repository\CommentsRepository"/>
+        <argument key="App\Repository\LikesRepository" type="service" id="App\Repository\LikesRepository"/>
         <argument key="App\Repository\PostRepository" type="service" id="App\Repository\PostRepository"/>
         <argument key="App\Repository\UserRepository" type="service" id="App\Repository\UserRepository"/>
       </argument>
@@ -3578,12 +3935,12 @@
       <argument type="service" id="security.token_storage"/>
     </service>
     <service id="debug.argument_resolver.service.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver" public="false">
-      <argument type="service" id=".service_locator.ijdxPNY"/>
+      <argument type="service" id=".service_locator.HXWT1BL"/>
     </service>
     <service id="debug.argument_resolver.default.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" public="false"/>
     <service id="debug.argument_resolver.variadic.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\VariadicValueResolver" public="false"/>
     <service id="debug.argument_resolver.not_tagged_controller.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver" public="false">
-      <argument type="service" id=".service_locator.ijdxPNY"/>
+      <argument type="service" id=".service_locator.HXWT1BL"/>
     </service>
     <service id=".errored..service_locator.vRP73BT.Symfony\Component\Security\Core\User\UserInterface" class="Symfony\Component\Security\Core\User\UserInterface"/>
     <service id="console.command_loader" class="Symfony\Component\Console\CommandLoader\ContainerCommandLoader" public="true">
@@ -3893,6 +4250,16 @@
     <service id="security.user_checker.api" alias="security.user_checker" public="false"/>
     <service id="security.authentication.session_strategy.user" alias="security.authentication.session_strategy_noop"/>
     <service id="security.user_checker.user" alias="security.user_checker" public="false"/>
+    <service id="security.authentication.session_strategy.post" alias="security.authentication.session_strategy_noop"/>
+    <service id="security.user_checker.post" alias="security.user_checker" public="false"/>
+    <service id="security.authentication.session_strategy.post_update" alias="security.authentication.session_strategy_noop"/>
+    <service id="security.user_checker.post_update" alias="security.user_checker" public="false"/>
+    <service id="security.authentication.session_strategy.post_delete" alias="security.authentication.session_strategy_noop"/>
+    <service id="security.user_checker.post_delete" alias="security.user_checker" public="false"/>
+    <service id="security.authentication.session_strategy.likes" alias="security.authentication.session_strategy_noop"/>
+    <service id="security.user_checker.likes" alias="security.user_checker" public="false"/>
+    <service id="security.authentication.session_strategy.comments" alias="security.authentication.session_strategy_noop"/>
+    <service id="security.user_checker.comments" alias="security.user_checker" public="false"/>
     <service id="Symfony\Component\Security\Core\User\UserCheckerInterface" alias="security.user_checker" public="false"/>
     <service id="Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenInterface" alias="lexik_jwt_authentication.jwt_manager"/>
     <service id="Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface" alias="lexik_jwt_authentication.jwt_manager"/>
@@ -3921,7 +4288,7 @@
     <service id="Twig\Environment" alias="twig" public="false"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.CmORmuK" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem" public="false"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.ijdxPNY"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.HXWT1BL"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id="Psr\Log\LoggerInterface" alias="logger" public="false"/>
     <service id="event_dispatcher" alias="debug.event_dispatcher" public="true"/>

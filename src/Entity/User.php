@@ -22,6 +22,13 @@ class User implements UserInterface
      */
     private $email;
 
+    
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Post", mappedBy="user", orphanRemoval=true)
+     * @ORM\OrderBy({"published"="DESC"})
+     */
+    private $posts;
+
     /**
      * @ORM\Column(type="string", length=180)
      */
@@ -37,6 +44,12 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      */
     private $password;
+
+    public function __construct()
+    {
+        $this->posts = new ArrayCollection();
+     
+    }
 
     public function getId(): ?int
     {

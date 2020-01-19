@@ -44,6 +44,40 @@ security:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
 
+        post:
+            pattern:   ^/post/create
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+
+        post_update:
+            pattern:   ^/post/update
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+
+        post_delete:
+            pattern:   ^/post/delete
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+
+        likes:
+            pattern:   ^/likes/create
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+
+        comments:
+            pattern:   ^/comments/create
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
 
         # access_control:
         #     - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }

@@ -10,6 +10,32 @@ app_user_number:
     methods: POST
 
 
+app_post_create:
+    path: /post/create
+    controller: App\Controller\PostController::create
+    methods: POST
+
+app_post_update:
+    path: /post/update/{id}
+    controller: App\Controller\PostController::update
+    methods: PUT
+
+app_post_delete:
+    path: /post/delete/{id}
+    controller: App\Controller\PostController::delete
+    methods: GET
+
+app_likes_create:
+    path: /likes/create
+    controller: App\Controller\LikesController::create
+    methods: POST
+
+
+app_comments_create:
+    path: /comments/create
+    controller: App\Controller\CommentsController::create
+    methods: POST
+
 # app_user_register:
 #     path: /register
 #     controller: App\Controller\UserController::register
