@@ -96,24 +96,24 @@ class PostController
 
      public function list(Request $request, PostRepository $postRepository){
         $limit = 10;
-        $posts = $postRepository->getAllPosts($limit);
-        //foreach($posts as $val){
-            //echo $val->getimageUrl();
-       // }
-         echo "<pre>";
-         print_r($posts);
-         die;
-
-      foreach ($posts as  $value) {
+        $offset = 0;
+        $posts = $postRepository->getAllPosts($limit,$offset);
+        $all_data = array();
+        foreach($posts as  $val){
+            $count  = $postRepository->getLikeCount($val["post_id"]);
+            //echo "<pre>";
+            //print_r($count);
+            //echo $val["post_id"];
+            //$all_data["post_id"] =  $val["post_id"];
             
-            $posts['image'] =  $value->getimageUrl();
-            $posts['description'] = $value->getDetail();
-            $posts['email'] = $value->getUser()->email;
-      
+            //echo $val->data->post_id;
         }
+
               
          $postsListConf= array(
                 'data' => $posts,
+                'offset' => $offset,
+                'limit' => $limit,
                 'message' => 'Post list',
                 'success' => 'true',
             );

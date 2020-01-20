@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Post;
+use App\Entity\Likes;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
@@ -42,18 +43,41 @@ class PostRepository extends ServiceEntityRepository
     }
 
    
-public function getAllPosts($limit = null)
-{
-    $qb = $this->createQueryBuilder('b')
-           ->select('b, c')
-           ->innerJoin('b.user', 'c')
-           ->addOrderBy('b.created_at', 'DESC');
+    public function getAllPosts($page_number = 1,$limit=null) {
+        //$entityManager = $this->_em();
+        $em = $this->getEntityManager();
 
-    if (false === is_null($limit))
-    $qb->setMaxResults($limit);
-    //echo $qb->getQuery()->getSQL();die;
-    return $qb->getQuery()->getResult();
-}
+        $query = $em->createQuery("SELECT p.id as post_id,u.name as author,p.detail as description,p.imageUrl as image,u.email as author_email 
+            FROM App\Entity\Post p Join
+            App\Entity\User u")->setMaxResults($page_number,$limit);
+       //echo $query->getSQL();
+        return $query->getArrayResult();        
+    }
+
+     public function getlikeCount($post_id) {
+        //$entityManager = $this->_em();
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery("SELECT count(l.id) as like_count FROM App\Entity\Likes l WHERE l.post = :post_id")            ->setParameter('post_id', $post_id);
+
+        //echo $query->getSQL();
+        return $query->getResult();        
+    }
+    
+
+
+// public function getAllPosts($limit = null)
+// {
+//     $qb = $this->createQueryBuilder('b')
+//            ->select('b, c')
+//            ->innerJoin('b.user', 'c')
+//            ->addOrderBy('b.created_at', 'DESC');
+
+//     if (false === is_null($limit))
+//     $qb->setMaxResults($limit);
+//     //echo $qb->getQuery()->getSQL();die;
+//     return $qb->getQuery()->getResult();
+// }
     // /**
     //  * @return Post[] Returns an array of Post objects
     //  */

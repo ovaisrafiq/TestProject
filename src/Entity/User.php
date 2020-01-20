@@ -23,11 +23,6 @@ class User implements UserInterface
     private $email;
 
     
-    /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="posts")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-     */
-    protected $posts;
 
     /**
      * @ORM\Column(type="string", length=180)

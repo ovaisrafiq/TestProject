@@ -12,9 +12,21 @@
 	use Symfony\Component\Routing\Annotation\Route;
 	use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 	use Symfony\Component\Security\Core\User\UserInterface;
+	use App\Repository\UserRepository;
+	use Symfony\Component\Security\Core\Security;
 
 	class AuthController extends ApiController
 	{
+
+		public function __construct(UserRepository $userRepository,Security $security)
+    	{
+        $this->userRepository = $userRepository;
+        //$this->jwtManager = $jwtManager;
+        //$this->jwtEncoder = $jwtEncoder;
+        $this->security = $security;
+        //$this->jwtManager = $jwtManager;
+    }
+
 
 		public function register(Request $request, UserPasswordEncoderInterface $encoder)
 		{
@@ -28,14 +40,38 @@
 				return $this->respondValidationError("Invalid Email or Password");
 			}
 
+			$check_existing_user = $this->userRepository->emailExist($email);
+		    if(count($check_existing_user) == 0){
+			    $user = new User($name);
+				$user->setPassword($encoder->encodePassword($user, $password));
+				$user->setEmail($email);
+				$user->setName($name);
+				$em->persist($user);
+				$em->flush();
 
-			$user = new User($name);
-			$user->setPassword($encoder->encodePassword($user, $password));
-			$user->setEmail($email);
-			$user->setName($name);
-			$em->persist($user);
-			$em->flush();
-			return $this->respondWithSuccess(sprintf('User %s successfully created', $user->getUsername()));
+				$success= array(
+                'message' => 'User Registered successfully',
+                'success' => 'true',
+	            );
+
+				$response = new JsonResponse();
+				$response->headers->set('Content-Type', 'application/json');
+         		return new JsonResponse($success);
+
+				//return $this->respondWithSuccess(sprintf('User %s successfully created', $user->getUsername()));
+		    }else{
+		    	$success= array(
+                'message' => 'User already exist with this email',
+                'status' => '422',
+	            );
+
+		    	$response = new JsonResponse();
+				$response->headers->set('Content-Type', 'application/json');
+         		return new JsonResponse($success);
+
+		    	//return $this->respondValidationError("Email already exist");
+		    }
+
 		}
 
 		/**
