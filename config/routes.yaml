@@ -25,6 +25,11 @@ app_post_delete:
     controller: App\Controller\PostController::delete
     methods: GET
 
+app_post_list:
+    path: /post/list
+    controller: App\Controller\PostController::list
+    methods: GET    
+
 app_likes_create:
     path: /likes/create
     controller: App\Controller\LikesController::create

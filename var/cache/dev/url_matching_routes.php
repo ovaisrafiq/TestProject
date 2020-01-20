@@ -15,6 +15,7 @@ return [
         '/_profiler/open' => [[['_route' => '_profiler_open_file', '_controller' => 'web_profiler.controller.profiler::openAction'], null, null, null, false, false, null]],
         '/user/number' => [[['_route' => 'app_user_number', '_controller' => 'App\\Controller\\UserController::number'], null, ['POST' => 0], null, false, false, null]],
         '/post/create' => [[['_route' => 'app_post_create', '_controller' => 'App\\Controller\\PostController::create'], null, ['POST' => 0], null, false, false, null]],
+        '/post/list' => [[['_route' => 'app_post_list', '_controller' => 'App\\Controller\\PostController::list'], null, ['GET' => 0], null, false, false, null]],
         '/likes/create' => [[['_route' => 'app_likes_create', '_controller' => 'App\\Controller\\LikesController::create'], null, ['POST' => 0], null, false, false, null]],
         '/comments/create' => [[['_route' => 'app_comments_create', '_controller' => 'App\\Controller\\CommentsController::create'], null, ['POST' => 0], null, false, false, null]],
         '/register' => [[['_route' => 'register', '_controller' => 'App\\Controller\\AuthController::register'], null, ['POST' => 0], null, false, false, null]],

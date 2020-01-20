@@ -24,10 +24,10 @@ class User implements UserInterface
 
     
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Post", mappedBy="user", orphanRemoval=true)
-     * @ORM\OrderBy({"published"="DESC"})
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="posts")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    private $posts;
+    protected $posts;
 
     /**
      * @ORM\Column(type="string", length=180)
@@ -47,7 +47,7 @@ class User implements UserInterface
 
     public function __construct()
     {
-        $this->posts = new ArrayCollection();
+        //$this->posts = new ArrayCollection();
      
     }
 
@@ -123,6 +123,26 @@ class User implements UserInterface
 
         return $this;
     }
+
+    /**
+     * Add posts
+     *
+     * @param \Entity\Product $post
+     */
+    public function addPost(?posts $posts)
+    {
+        $this->posts[] = $posts;
+    }
+
+/**
+ * Get posts
+ *
+ * @return Doctrine\Common\Collections\Collection 
+ */
+public function getPost()
+{
+    return $this->posts;
+}
 
     /**
      * @see UserInterface

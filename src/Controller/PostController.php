@@ -94,7 +94,38 @@ class PostController
 		return new JsonResponse(['status' => '{{Post deleted Successfully!}'], Response::HTTP_CREATED);
 	}
 
+     public function list(Request $request, PostRepository $postRepository){
+        $limit = 10;
+        $posts = $postRepository->getAllPosts($limit);
+        //foreach($posts as $val){
+            //echo $val->getimageUrl();
+       // }
+         echo "<pre>";
+         print_r($posts);
+         die;
 
+      foreach ($posts as  $value) {
+            
+            $posts['image'] =  $value->getimageUrl();
+            $posts['description'] = $value->getDetail();
+            $posts['email'] = $value->getUser()->email;
+      
+        }
+              
+         $postsListConf= array(
+                'data' => $posts,
+                'message' => 'Post list',
+                'success' => 'true',
+            );
+
+         //print_r($postsListConf);die;
+        $data['posts'] = $postsListConf;
+        $response = new JsonResponse();
+        $response->headers->set('Content-Type', 'application/json');
+         return new JsonResponse($data["posts"]);
+
+
+    }
     public function login(){
 
     }

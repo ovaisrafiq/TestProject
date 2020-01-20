@@ -19,6 +19,7 @@ return [
     'app_post_create' => [[], ['_controller' => 'App\\Controller\\PostController::create'], [], [['text', '/post/create']], [], []],
     'app_post_update' => [['id'], ['_controller' => 'App\\Controller\\PostController::update'], [], [['variable', '/', '[^/]++', 'id', true], ['text', '/post/update']], [], []],
     'app_post_delete' => [['id'], ['_controller' => 'App\\Controller\\PostController::delete'], [], [['variable', '/', '[^/]++', 'id', true], ['text', '/post/delete']], [], []],
+    'app_post_list' => [[], ['_controller' => 'App\\Controller\\PostController::list'], [], [['text', '/post/list']], [], []],
     'app_likes_create' => [[], ['_controller' => 'App\\Controller\\LikesController::create'], [], [['text', '/likes/create']], [], []],
     'app_comments_create' => [[], ['_controller' => 'App\\Controller\\CommentsController::create'], [], [['text', '/comments/create']], [], []],
     'register' => [[], ['_controller' => 'App\\Controller\\AuthController::register'], [], [['text', '/register']], [], []],

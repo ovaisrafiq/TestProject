@@ -41,7 +41,19 @@ class PostRepository extends ServiceEntityRepository
         ;
     }
 
+   
+public function getAllPosts($limit = null)
+{
+    $qb = $this->createQueryBuilder('b')
+           ->select('b, c')
+           ->innerJoin('b.user', 'c')
+           ->addOrderBy('b.created_at', 'DESC');
 
+    if (false === is_null($limit))
+    $qb->setMaxResults($limit);
+    //echo $qb->getQuery()->getSQL();die;
+    return $qb->getQuery()->getResult();
+}
     // /**
     //  * @return Post[] Returns an array of Post objects
     //  */
