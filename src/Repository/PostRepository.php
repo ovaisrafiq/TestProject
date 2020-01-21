@@ -48,8 +48,8 @@ class PostRepository extends ServiceEntityRepository
         $em = $this->getEntityManager();
 
         $query = $em->createQuery("SELECT p.id as post_id,u.name as author,p.detail as description,p.imageUrl as image,u.email as author_email 
-            FROM App\Entity\Post p Join
-            App\Entity\User u")->setMaxResults($page_number,$limit);
+            FROM App\Entity\Post p Join 
+            App\Entity\User u  group by p.id")->setMaxResults($page_number,$limit);
        //echo $query->getSQL();
         return $query->getArrayResult();        
     }
@@ -64,7 +64,15 @@ class PostRepository extends ServiceEntityRepository
         return $query->getResult();        
     }
     
+    public function getComments($post_id) {
+        //$entityManager = $this->_em();
+        $em = $this->getEntityManager();
 
+        $query = $em->createQuery("SELECT c.comment FROM App\Entity\Comments c WHERE c.post = :post_id")            ->setParameter('post_id', $post_id);
+
+        //echo $query->getSQL();
+        return $query->getResult();        
+    }
 
 // public function getAllPosts($limit = null)
 // {

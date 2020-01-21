@@ -58,9 +58,16 @@ class PostController
         $image_url = isset($data['image_url']) ? $data['image_url']:'';
         
 		$post = $postRepository->find($id);
+        $date1 = $post->getCreatedAt();
+        $date2 = $date1->diff(new \DateTime());
+        $date3 = new \DateTime();
+        
 	    if (!$post){
 		    return new JsonResponse(['status' => '{{Post not Found!}'], Response::HTTP_CREATED);
 	    }
+        if($date2->h >1){
+            return new JsonResponse(['status' => '{{You can not edit this post as its past 1 hour!}'], Response::HTTP_CREATED);   
+        }
 		$response = new JsonResponse();
         $response->headers->set('Content-Type', 'application/json');
         //if (empty($detail) ) {
@@ -83,9 +90,16 @@ class PostController
         $user = $this->security->getUser();
          
 		$post = $postRepository->find($id);
+        $date1 = $post->getCreatedAt();
+        $date2 = $date1->diff(new \DateTime());
+        $date3 = new \DateTime();
+        
 	    if (!$post){
 		    return new JsonResponse(['status' => '{{Post not Found!}'], Response::HTTP_CREATED);
 	    }
+        if($date2->h >1){
+            return new JsonResponse(['status' => '{{You can not edit this post as its past 1 hour!}'], Response::HTTP_CREATED);   
+        }
 		$response = new JsonResponse();
         $response->headers->set('Content-Type', 'application/json');
         //if (empty($detail) ) {
@@ -95,21 +109,38 @@ class PostController
 	}
 
      public function list(Request $request, PostRepository $postRepository){
-        $limit = 10;
-        $offset = 0;
-        $posts = $postRepository->getAllPosts($limit,$offset);
-        $all_data = array();
-        foreach($posts as  $val){
-            $count  = $postRepository->getLikeCount($val["post_id"]);
-            //echo "<pre>";
-            //print_r($count);
-            //echo $val["post_id"];
-            //$all_data["post_id"] =  $val["post_id"];
-            
-            //echo $val->data->post_id;
-        }
+        //$limit = 10;
+        //$offset = 0;
+        $data = json_decode($request->getContent(), true);
 
-              
+        $offset = $data['offset'];
+        $limit = $data['limit'];
+        $posts = $postRepository->getAllPosts($limit,$offset);
+
+        $i=0;
+        foreach($posts as  $val){
+           $count  = $postRepository->getLikeCount($val["post_id"]);
+           $getcomments  = $postRepository->getComments($val["post_id"]);
+           //print_r($getcomments);die;
+           //$array_count[] = $count[0]["like_count"];
+            if ($count) { 
+                $posts[$i]['likes'] = $count[0]["like_count"]; 
+                } else { 
+                $posts[$i]['likes'] = $count[0]["like_count"]; 
+            } 
+            if ($getcomments) { 
+                $posts[$i]['comments'] = $getcomments; 
+                } else { 
+                $posts[$i]['comments'] = $getcomments; 
+            } 
+             $i++;
+            
+        }
+ 
+  
+
+
+        
          $postsListConf= array(
                 'data' => $posts,
                 'offset' => $offset,
@@ -117,8 +148,8 @@ class PostController
                 'message' => 'Post list',
                 'success' => 'true',
             );
-
-         //print_r($postsListConf);die;
+       
+   
         $data['posts'] = $postsListConf;
         $response = new JsonResponse();
         $response->headers->set('Content-Type', 'application/json');

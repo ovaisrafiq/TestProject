@@ -119,25 +119,7 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * Add posts
-     *
-     * @param \Entity\Product $post
-     */
-    public function addPost(?posts $posts)
-    {
-        $this->posts[] = $posts;
-    }
 
-/**
- * Get posts
- *
- * @return Doctrine\Common\Collections\Collection 
- */
-public function getPost()
-{
-    return $this->posts;
-}
 
     /**
      * @see UserInterface

@@ -25,11 +25,12 @@ class Post
 
 
 
-
+    
     
     public function __construct()
     {
       $this->user = new ArrayCollection();
+      $this->comments = new ArrayCollection();
     }
 
     /**
@@ -109,5 +110,28 @@ class Post
     public function getUser():  self
     {
         return $this->user;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \Entity\Comments $comments
+     * @return Comments
+     */
+    public function setComments(?comments $comments):  self
+    {
+        $this->comments = $comments;
+    
+        return $this;
+    }
+
+    /**
+     * Get comments
+     *
+     * @return \Entity\Comments
+     */
+    public function geComments():  self
+    {
+        return $this->comments;
     }
 }
