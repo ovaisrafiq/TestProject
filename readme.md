@@ -23,9 +23,13 @@ Virtual host example
 run composer install to install all dependencies
 
 commands
+
 $ php bin/console make:migration
+
 $ php bin/console doctrine:schema:update --force
+
 $ php bin/console cache:clear --dev
+
 $ php bin/phpunit -> to run test cases
 
 import postman collection to run those api urls
