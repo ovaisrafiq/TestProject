@@ -65,12 +65,12 @@ security:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
 
-        post_list:
-            pattern:   ^/post/list
-            stateless: true
-            guard:
-                authenticators:
-                    - lexik_jwt_authentication.jwt_token_authenticator                    
+        # post_list:
+        #     pattern:   ^/post/list
+        #     stateless: true
+        #     guard:
+        #         authenticators:
+        #             - lexik_jwt_authentication.jwt_token_authenticator                    
 
         likes:
             pattern:   ^/likes/create
